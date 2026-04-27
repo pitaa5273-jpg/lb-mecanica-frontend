@@ -1,3 +1,5 @@
+/* Login Page - LB Mecânica Theme */
+
 * {
   margin: 0;
   padding: 0;
@@ -6,8 +8,6 @@
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  min-height: 100vh;
 }
 
 .login-container {
@@ -15,17 +15,47 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative background elements */
+.login-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(255, 165, 0, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.login-container::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -5%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255, 165, 0, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
 }
 
 .login-box {
   background: white;
   padding: 50px 40px;
-  border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(255, 165, 0, 0.1);
   width: 100%;
   max-width: 420px;
-  animation: slideInUp 0.5s ease-out;
+  animation: slideInUp 0.6s ease-out;
+  position: relative;
+  z-index: 1;
+  border: 2px solid rgba(255, 165, 0, 0.1);
 }
 
 .logo-section {
@@ -41,12 +71,24 @@ body {
   height: auto;
   object-fit: contain;
   animation: slideInDown 0.6s ease-out;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
 }
 
 @keyframes slideInDown {
   from {
     opacity: 0;
     transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -64,59 +106,109 @@ body {
   color: #1a1a1a;
   font-weight: 600;
   font-size: 14px;
+  letter-spacing: 0.5px;
 }
 
 .form-group input {
   width: 100%;
-  padding: 12px;
+  padding: 12px 14px;
   border: 2px solid #e0e0e0;
-  border-radius: 5px;
+  border-radius: 8px;
   font-size: 14px;
-  transition: border-color 0.3s;
+  transition: all 0.3s ease;
+  background: #fafafa;
 }
 
 .form-group input:focus {
   outline: none;
   border-color: #FFA500;
-  box-shadow: 0 0 5px rgba(255, 165, 0, 0.3);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(255, 165, 0, 0.1);
+}
+
+.form-group input::placeholder {
+  color: #999;
 }
 
 .error-message {
-  background-color: #fee;
+  background: linear-gradient(135deg, #fee 0%, #fdd 100%);
   color: #c33;
-  padding: 10px;
-  border-radius: 5px;
+  padding: 12px 14px;
+  border-radius: 8px;
   margin-bottom: 20px;
   font-size: 14px;
   border-left: 4px solid #c33;
+  animation: slideInUp 0.3s ease-out;
 }
 
 .login-button {
   width: 100%;
-  padding: 12px;
+  padding: 13px;
   background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%);
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.3s ease;
   margin-top: 10px;
+  box-shadow: 0 4px 15px rgba(255, 165, 0, 0.3);
+  letter-spacing: 0.5px;
 }
 
 .login-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(255, 165, 0, 0.4);
+  box-shadow: 0 6px 20px rgba(255, 165, 0, 0.4);
+  background: linear-gradient(135deg, #FF8C00 0%, #FF7F00 100%);
 }
 
 .login-button:active {
   transform: translateY(0);
 }
 
+.login-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .demo-text {
   text-align: center;
   margin-top: 20px;
-  color: #666;
+  color: #999;
   font-size: 12px;
+  letter-spacing: 0.3px;
+}
+
+.demo-text strong {
+  color: #FFA500;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .login-box {
+    padding: 40px 25px;
+    margin: 20px;
+    border-radius: 12px;
+  }
+
+  .logo-image {
+    max-width: 220px;
+  }
+
+  .login-container::before {
+    width: 300px;
+    height: 300px;
+    top: -30%;
+    right: -5%;
+  }
+
+  .login-container::after {
+    width: 250px;
+    height: 250px;
+    bottom: -20%;
+    left: -10%;
+  }
 }
