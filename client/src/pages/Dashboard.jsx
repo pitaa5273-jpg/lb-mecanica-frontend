@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import '../styles/Dashboard.css';
-import { Home, FileText, Users, MoreHorizontal } from 'lucide-react';
+import { Home, FileText, Users, Wrench, Truck, DollarSign, LogOut, Menu, X } from 'lucide-react';
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [stats, setStats] = useState({
     receita: 0,
     despesa: 0,
@@ -25,7 +26,6 @@ export default function Dashboard() {
         setStats(response.data);
       } catch (error) {
         console.error('Erro ao buscar estatísticas:', error);
-        // Dados de exemplo se a API falhar
         setStats({
           receita: 659,
           despesa: 250,
@@ -48,108 +48,136 @@ export default function Dashboard() {
     navigate('/login');
   };
 
+  const menuItems = [
+    { icon: Home, label: 'Dashboard', path: '/dashboard' },
+    { icon: FileText, label: 'Ordens de Serviço', path: '/os' },
+    { icon: Users, label: 'Clientes', path: '/clientes' },
+    { icon: Truck, label: 'Veículos', path: '/veiculos' },
+    { icon: DollarSign, label: 'Financeiro', path: '/financeiro' },
+  ];
+
   return (
-    <div className="dashboard-container">
-      {/* Header */}
-      <header className="dashboard-header">
-        <div className="header-content">
-          <div className="logo-section">
-            <img src="/logo.png" alt="LB Mecânica" className="header-logo" />
-            <span className="header-title">LB MECÂNICA AUTOMOTIVA</span>
-          </div>
-          <button onClick={handleLogout} className="logout-btn">Sair</button>
+    <div className="dashboard-layout">
+      {/* Sidebar */}
+      <aside className={`sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
+        <div className="sidebar-header">
+          <img src="/logo.png" alt="LB Mecânica" className="sidebar-logo" />
+          <button 
+            className="sidebar-toggle"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
+            {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
-      </header>
+
+        <nav className="sidebar-nav">
+          {menuItems.map((item) => (
+            <button
+              key={item.path}
+              className="nav-link"
+              onClick={() => navigate(item.path)}
+              title={item.label}
+            >
+              <item.icon size={20} />
+              {sidebarOpen && <span>{item.label}</span>}
+            </button>
+          ))}
+        </nav>
+
+        <div className="sidebar-footer">
+          <button 
+            className="logout-link"
+            onClick={handleLogout}
+            title="Sair"
+          >
+            <LogOut size={20} />
+            {sidebarOpen && <span>Sair</span>}
+          </button>
+        </div>
+      </aside>
 
       {/* Main Content */}
-      <main className="dashboard-main">
-        {/* Greeting */}
-        <div className="greeting-section">
-          <h1>Bom trabalho hoje</h1>
-        </div>
+      <main className="main-content">
+        {/* Header */}
+        <header className="content-header">
+          <h1>Dashboard</h1>
+          <p>Bem-vindo à LB Mecânica Automotiva</p>
+        </header>
 
-        {/* Revenue Card */}
-        <div className="revenue-card">
-          <div className="revenue-header">
-            <h2>RECEITA DO MÊS</h2>
-          </div>
-          <div className="revenue-amount">
-            <h3>R$ {stats.receita?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
-          </div>
-          <div className="revenue-breakdown">
-            <div className="breakdown-item">
-              <span className="breakdown-icon">📉</span>
-              <span>Despesa R$ {stats.despesa?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+        {/* Content */}
+        <div className="dashboard-content">
+          {/* Revenue Card */}
+          <div className="revenue-card">
+            <div className="revenue-header">
+              <h2>RECEITA DO MÊS</h2>
             </div>
-            <div className="breakdown-item">
-              <span className="breakdown-icon">📈</span>
-              <span>Lucro R$ {stats.lucro?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+            <div className="revenue-amount">
+              <h3>R$ {stats.receita?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
+            </div>
+            <div className="revenue-breakdown">
+              <div className="breakdown-item">
+                <span className="breakdown-label">Despesa</span>
+                <span className="breakdown-value">R$ {stats.despesa?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+              </div>
+              <div className="breakdown-item">
+                <span className="breakdown-label">Lucro</span>
+                <span className="breakdown-value">R$ {stats.lucro?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Stats Grid */}
+          <div className="stats-grid">
+            <div className="stat-card" onClick={() => navigate('/os')}>
+              <div className="stat-icon os-icon">📋</div>
+              <div className="stat-content">
+                <div className="stat-value">{stats.osAbertas}</div>
+                <div className="stat-label">OS Abertas</div>
+              </div>
+            </div>
+
+            <div className="stat-card" onClick={() => navigate('/os')}>
+              <div className="stat-icon concluida-icon">✓</div>
+              <div className="stat-content">
+                <div className="stat-value">{stats.osConcluidas}</div>
+                <div className="stat-label">Concluídas</div>
+              </div>
+            </div>
+
+            <div className="stat-card" onClick={() => navigate('/os')}>
+              <div className="stat-icon orcamento-icon">📄</div>
+              <div className="stat-content">
+                <div className="stat-value">{stats.orcamentos}</div>
+                <div className="stat-label">Orçamentos</div>
+              </div>
+            </div>
+
+            <div className="stat-card" onClick={() => navigate('/clientes')}>
+              <div className="stat-icon cliente-icon">👥</div>
+              <div className="stat-content">
+                <div className="stat-value">{stats.clientes}</div>
+                <div className="stat-label">Clientes</div>
+              </div>
+            </div>
+
+            <div className="stat-card" onClick={() => navigate('/veiculos')}>
+              <div className="stat-icon veiculo-icon">🚗</div>
+              <div className="stat-content">
+                <div className="stat-value">{stats.veiculos}</div>
+                <div className="stat-label">Veículos</div>
+              </div>
+            </div>
+
+            <div className="stat-card" onClick={() => navigate('/financeiro')}>
+              <div className="stat-icon peca-icon">📦</div>
+              <div className="stat-content">
+                <div className="stat-value">{stats.pecas}</div>
+                <div className="stat-label">Peças</div>
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Stats Grid */}
-        <div className="stats-grid">
-          <div className="stat-card" onClick={() => navigate('/os')}>
-            <div className="stat-icon os-icon">📋</div>
-            <div className="stat-value">{stats.osAbertas}</div>
-            <div className="stat-label">OS Abertas</div>
-          </div>
-
-          <div className="stat-card" onClick={() => navigate('/os')}>
-            <div className="stat-icon concluida-icon">✓</div>
-            <div className="stat-value">{stats.osConcluidas}</div>
-            <div className="stat-label">Concluídas</div>
-          </div>
-
-          <div className="stat-card" onClick={() => navigate('/os')}>
-            <div className="stat-icon orcamento-icon">📄</div>
-            <div className="stat-value">{stats.orcamentos}</div>
-            <div className="stat-label">Orçamentos</div>
-          </div>
-
-          <div className="stat-card" onClick={() => navigate('/clientes')}>
-            <div className="stat-icon cliente-icon">👥</div>
-            <div className="stat-value">{stats.clientes}</div>
-            <div className="stat-label">Clientes</div>
-          </div>
-
-          <div className="stat-card" onClick={() => navigate('/veiculos')}>
-            <div className="stat-icon veiculo-icon">🚗</div>
-            <div className="stat-value">{stats.veiculos}</div>
-            <div className="stat-label">Veículos</div>
-          </div>
-
-          <div className="stat-card" onClick={() => navigate('/financeiro')}>
-            <div className="stat-icon peca-icon">📦</div>
-            <div className="stat-value">{stats.pecas}</div>
-            <div className="stat-label">Peças</div>
-          </div>
-        </div>
-
-        {/* Spacer for bottom nav */}
-        <div style={{ height: '80px' }}></div>
       </main>
-
-      {/* Bottom Navigation */}
-      <nav className="bottom-nav">
-        <button className="nav-item active" onClick={() => navigate('/dashboard')}>
-          <Home size={24} />
-          <span>Início</span>
-        </button>
-        <button className="nav-item" onClick={() => navigate('/os')}>
-          <FileText size={24} />
-          <span>OS</span>
-        </button>
-        <button className="nav-item" onClick={() => navigate('/clientes')}>
-          <Users size={24} />
-          <span>Clientes</span>
-        </button>
-        <button className="nav-item" onClick={() => navigate('/financeiro')}>
-          <MoreHorizontal size={24} />
-          <span>Mais</span>
-        </button>
-      </nav>
     </div>
   );
 }
