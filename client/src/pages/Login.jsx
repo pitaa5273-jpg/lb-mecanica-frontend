@@ -25,9 +25,7 @@ export default function Login() {
     <div className="login-container">
       <div className="login-box">
         <div className="logo-section">
-          <div className="logo-placeholder">🔧</div>
-          <h1>LB Mecânica</h1>
-          <p>Automotiva</p>
+          <img src="/logo.png" alt="LB Mecânica Logo" className="logo-image" />
         </div>
         
         <form onSubmit={handleSubmit}>
