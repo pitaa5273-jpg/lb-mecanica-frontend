@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import { exportBackup, importBackup, validateBackupFile } from '../services/backupService';
 import '../styles/Dashboard.css';
-import { Home, FileText, Users, Wrench, Truck, DollarSign, LogOut, Menu, X } from 'lucide-react';
+import { Home, FileText, Users, Wrench, Truck, DollarSign, LogOut, Menu, X, Download, Upload } from 'lucide-react';
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [backupLoading, setBackupLoading] = useState(false);
+  const fileInputRef = React.useRef(null);
   const [stats, setStats] = useState({
     receita: 0,
     despesa: 0,
@@ -46,6 +49,48 @@ export default function Dashboard() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login');
+  };
+
+  const handleExportBackup = async () => {
+    try {
+      setBackupLoading(true);
+      await exportBackup();
+      alert('Backup exportado com sucesso!');
+    } catch (error) {
+      alert('Erro ao exportar backup: ' + error.message);
+    } finally {
+      setBackupLoading(false);
+    }
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelect = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const validation = validateBackupFile(file);
+    if (!validation.valid) {
+      alert(validation.message);
+      return;
+    }
+
+    try {
+      setBackupLoading(true);
+      const result = await importBackup(file);
+      alert(result.message);
+      // Recarregar dados
+      window.location.reload();
+    } catch (error) {
+      alert('Erro ao importar backup: ' + error.message);
+    } finally {
+      setBackupLoading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
   };
 
   const menuItems = [
@@ -174,6 +219,39 @@ export default function Dashboard() {
                 <div className="stat-value">{stats.pecas}</div>
                 <div className="stat-label">Peças</div>
               </div>
+            </div>
+          </div>
+
+          {/* Backup Section */}
+          <div className="backup-section">
+            <h3>Backup & Restauração</h3>
+            <p>Exporte ou importe dados para backup e recuperação</p>
+            <div className="backup-buttons">
+              <button 
+                className="btn-backup export"
+                onClick={handleExportBackup}
+                disabled={backupLoading}
+                title="Exportar todos os dados para backup"
+              >
+                <Download size={16} />
+                {backupLoading ? 'Exportando...' : 'Exportar Backup'}
+              </button>
+              <button 
+                className="btn-backup import"
+                onClick={handleImportClick}
+                disabled={backupLoading}
+                title="Importar dados de um arquivo de backup"
+              >
+                <Upload size={16} />
+                {backupLoading ? 'Importando...' : 'Importar Backup'}
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".json"
+                onChange={handleFileSelect}
+                style={{ display: 'none' }}
+              />
             </div>
           </div>
         </div>
